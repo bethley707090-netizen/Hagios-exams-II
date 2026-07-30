@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hagios International School — Classroom Quiz</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" />
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Inter', -apple-system, sans-serif;
+    color: #2A2A28;
+    background: #EDEAE1;
+    background-image: repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(43,76,126,0.06) 28px);
+    min-height: 100vh;
+    padding-bottom: 60px;
+  }
+  .mono { font-family: 'IBM Plex Mono', monospace; }
+  .school-banner {
+    text-align: center;
+    padding: 18px 20px 14px;
+    background: #2A2A28;
+    color: #F7F5EF;
+  }
+  .school-name { font-family: 'IBM Plex Mono', monospace; font-weight: 700; font-size: 19px; letter-spacing: 1.5px; }
+  .school-sub { font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 3px; color: #B7B2A2; margin-top: 3px; }
+  .header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 28px; border-bottom: 2px solid #2A2A28; background: #F7F5EF;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand-badge {
+    width: 36px; height: 36px; border-radius: 8px; background: #2B4C7E;
+    display: flex; align-items: center; justify-content: center; transform: rotate(-3deg);
+    color: #F7F5EF; font-weight: 700; font-family: 'IBM Plex Mono', monospace;
+  }
+  .brand-title { font-family: 'IBM Plex Mono', monospace; font-weight: 700; font-size: 17px; letter-spacing: -0.3px; }
+  .brand-sub { font-size: 11.5px; color: #8A8A80; font-family: 'IBM Plex Mono', monospace; }
+  .container { max-width: 560px; margin: 0 auto; padding: 0 24px; }
+  .container-wide { max-width: 760px; margin: 0 auto; padding: 36px 24px; }
+  .card {
+    background: #F7F5EF; border: 1.5px solid #D8D4C8; border-radius: 10px; padding: 18px 20px;
+  }
+  .card-btn { display: flex; align-items: center; gap: 14px; padding: 20px 22px; cursor: pointer; text-align: left; width: 100%; border: 1.5px solid #D8D4C8; background: #F7F5EF; border-radius: 10px; }
+  .card-btn:hover { border-color: #2A2A28; }
+  .row { display: flex; flex-direction: column; gap: 16px; }
+  h1.title { font-family: 'IBM Plex Mono', monospace; font-size: 26px; font-weight: 700; margin: 0 0 4px 0; letter-spacing: -0.5px; }
+  h2.subtitle { font-family: 'IBM Plex Mono', monospace; font-size: 20px; margin: 0 0 4px 0; }
+  p.desc { color: #6B6B63; margin: 0 0 12px 0; font-size: 15px; }
+  .text-input {
+    width: 100%; padding: 11px 13px; font-size: 15px; border: 2px solid #2A2A28;
+    border-radius: 8px; background: #F7F5EF; font-family: 'Inter', sans-serif;
+  }
+  label.field-label { display: block; font-size: 12px; color: #8A8A80; font-family: 'IBM Plex Mono', monospace; margin-bottom: 5px; }
+  .btn-primary {
+    padding: 13px 20px; background: #2B4C7E; color: #F7F5EF; border: none; border-radius: 8px;
+    font-size: 15px; font-weight: 700; font-family: 'IBM Plex Mono', monospace; cursor: pointer;
+  }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-ghost {
+    padding: 10px 16px; background: transparent; border: 2px solid #2A2A28; border-radius: 8px;
+    font-family: 'IBM Plex Mono', monospace; font-weight: 600; font-size: 13px; cursor: pointer; color: #2A2A28;
+  }
+  .error-text { color: #B3432B; font-size: 13px; }
+  .bubble {
+    width: 34px; height: 34px; border-radius: 50%; border: 2px solid #9CA3AF; background: transparent;
+    color: #4B5563; font-family: 'IBM Plex Mono', monospace; font-weight: 600; font-size: 14px;
+    display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
+  }
+  .bubble.filled { border-color: #2B4C7E; background: #2B4C7E; color: #F7F5EF; }
+  .bubble.correct { border-color: #2F6B4F; background: #2F6B4F; color: #F7F5EF; }
+  .bubble.incorrect { border-color: #B3432B; background: #B3432B; color: #F7F5EF; }
+  .bubble.missed { border-color: #2F6B4F; background: transparent; color: #2F6B4F; }
+  .bubble.disabled { cursor: default; }
+  .opt-row { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+  table { width: 100%; border-collapse: collapse; }
+  th { text-align: left; padding: 10px 16px; font-size: 12px; color: #8A8A80; font-family: 'IBM Plex Mono', monospace; }
+  td { padding: 10px 16px; font-size: 14px; border-top: 1px solid #EDEAE1; }
+  .stamp {
+    display: inline-block; border: 4px solid #B3432B; border-radius: 12px; padding: 18px 36px;
+    transform: rotate(-4deg); color: #B3432B; font-family: 'IBM Plex Mono', monospace; font-weight: 700;
+    font-size: 40px; margin-bottom: 24px;
+  }
+  a.link-btn { text-decoration: none; }
+</style>
+</head>
+<body>
+  <div class="school-banner">
+    <div class="school-name">HAGIOS INTERNATIONAL SCHOOL</div>
+    <div class="school-sub">ABAKILIKI</div>
+  </div>
+  <div class="header">
+    <div class="brand">
+      <div class="brand-badge">Q</div>
+      <div>
+        <div class="brand-title">Answer Sheet</div>
+        <div class="brand-sub">CLASSROOM OBJECTIVE QUIZ</div>
+      </div>
+    </div>
+    <button id="exitBtn" class="btn-ghost" style="display:none;">&larr; Exit</button>
+  </div>
+  <div id="app"></div>
+
+<script>
+const LETTERS = ["A","B","C","D","E","F"];
+const ADMIN_KEY = "quiz-admin-passcode";
+const TEACHERS_KEY = "quiz-teachers";
+const RESULTS_KEY = "quiz-results";
+const DEFAULT_ADMIN_PASSCODE = "changeme123";
+
+function uid(prefix) { return prefix + "_" + Date.now() + "_" + Math.random().toString(36).slice(2,8); }
+
+function sampleQuestions() {
+  return [
+    { id: uid("q"), text: "What is the chemical symbol for water?", options: ["O2","H2O","CO2","NaCl"], correctIndex: 1 },
+    { id: uid("q"), text: "What is 7 x 8?", options: ["54","56","64","48"], correctIndex: 1 }
+  ];
+}
+
+let state = {
+  view: "landing",
+  loaded: false,
+  teachers: [],
+  adminPasscode: DEFAULT_ADMIN_PASSCODE,
+  results: [],
+  currentTeacherId: null,
+  isAdmin: false,
+  loginError: "",
+  loginName: "",
+  loginPass: "",
+  newTeacherName: "",
+  newTeacherPass: "",
+  newAdminPass: "",
+  selectedTeacherId: null,
+  studentName: "",
+  answers: {},
+  submitted: false,
+  score: 0,
+  saveError: false,
+  editingQuestions: null,
+  savingQuestions: false
+};
+
+function escapeHtml(str) {
+  return (str || "").replace(/[&<>"']/g, function(c) {
+    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+  });
+}
+
+async function init() {
+  try {
+    const t = await window.storage.get(TEACHERS_KEY, true);
+    if (t && t.value) state.teachers = JSON.parse(t.value);
+  } catch (e) {}
+  try {
+    const a = await window.storage.get(ADMIN_KEY, true);
+    if (a && a.value) { state.adminPasscode = a.value; }
+    else { await window.storage.set(ADMIN_KEY, DEFAULT_ADMIN_PASSCODE, true); }
+  } catch (e) {}
+  state.loaded = true;
+  render();
+}
+
+async function persistTeachers(next) {
+  state.teachers = next;
+  try { await window.storage.set(TEACHERS_KEY, JSON.stringify(next), true); } catch (e) {}
+}
+
+async function loadResults() {
+  try {
+    const r = await window.storage.get(RESULTS_KEY, true);
+    state.results = r && r.value ? JSON.parse(r.value) : [];
+  } catch (e) { state.results = []; }
+}
+
+function goLanding() {
+  state.view = "landing";
+  state.loginName = ""; state.loginPass = ""; state.loginError = "";
+  state.currentTeacherId = null; state.isAdmin = false;
+  state.selectedTeacherId = null; state.studentName = "";
+  state.answers = {}; state.submitted = false; state.saveError = false;
+  state.editingQuestions = null;
+  render();
+}
+
+function goto(view) {
+  state.view = view;
+  state.loginName = ""; state.loginPass = ""; state.loginError = "";
+  render();
+}
+
+async function attemptTeacherLogin() {
+  const name = document.getElementById("loginNameInput").value.trim();
+  const pass = document.getElementById("loginPassInput").value;
+  const t = state.teachers.find(function(tt) {
+    return tt.name.toLowerCase() === name.toLowerCase() && tt.passcode === pass;
+  });
+  if (!t) {
+    state.loginError = "Name or passcode didn't match. Check with your admin.";
+    render();
+    return;
+  }
+  state.currentTeacherId = t.id;
+  state.editingQuestions = JSON.parse(JSON.stringify(t.questions || []));
+  state.loginError = "";
+  await loadResults();
+  state.view = "teacher-dash";
+  render();
+}
+
+async function attemptAdminLogin() {
+  const pass = document.getElementById("adminPassInput").value;
+  if (pass !== state.adminPasscode) {
+    state.loginError = "Incorrect admin passcode.";
+    render();
+    return;
+  }
+  state.isAdmin = true;
+  state.loginError = "";
+  await loadResults();
+  state.view = "admin-dash";
+  render();
+}
+
+async function addTeacher() {
+  const name = document.getElementById("newTeacherNameInput").value.trim();
+  const pass = document.getElementById("newTeacherPassInput").value.trim();
+  if (!name || !pass) return;
+  if (state.teachers.some(function(t) { return t.name.toLowerCase() === name.toLowerCase(); })) {
+    alert("A teacher with that name already exists.");
+    return;
+  }
+  const next = state.teachers.concat([{ id: uid("t"), name: name, passcode: pass, questions: sampleQuestions() }]);
+  await persistTeachers(next);
+  render();
+}
+
+async function removeTeacher(id) {
+  if (!confirm("Remove this teacher and their questions?")) return;
+  const next = state.teachers.filter(function(t) { return t.id !== id; });
+  await persistTeachers(next);
+  render();
+}
+
+async function updateAdminPasscode() {
+  const val = document.getElementById("newAdminPassInput").value.trim();
+  if (!val) return;
+  state.adminPasscode = val;
+  try { await window.storage.set(ADMIN_KEY, val, true); } catch (e) {}
+  alert("Admin passcode updated.");
+  render();
+}
+
+function updateQuestionText(idx, text) { state.editingQuestions[idx].text = text; }
+function updateOptionText(qIdx, optIdx, text) { state.editingQuestions[qIdx].options[optIdx] = text; }
+function setCorrectIndex(qIdx, optIdx) { state.editingQuestions[qIdx].correctIndex = optIdx; render(); }
+function addQuestion() {
+  state.editingQuestions.push({ id: uid("q"), text: "", options: ["","","",""], correctIndex: 0 });
+  render();
+}
+function removeQuestionEdit(idx) { state.editingQuestions.splice(idx, 1); render(); }
+
+async function saveOwnQuestions() {
+  state.savingQuestions = true;
+  render();
+  const cleaned = state.editingQuestions.filter(function(q) { return q.text.trim() !== ""; });
+  const next = state.teachers.map(function(t) {
+    return t.id === state.currentTeacherId ? Object.assign({}, t, { questions: cleaned }) : t;
+  });
+  await persistTeachers(next);
+  state.savingQuestions = false;
+  render();
+}
+
+function selectAnswer(qId, optionIndex) {
+  if (state.submitted) return;
+  state.answers[qId] = optionIndex;
+  render();
+}
+
+function activeQuizQuestions() {
+  const t = state.teachers.find(function(t) { return t.id === state.selectedTeacherId; });
+  return (t && t.questions) || [];
+}
+
+async function handleSubmit() {
+  const questions = activeQuizQuestions();
+  let s = 0;
+  questions.forEach(function(q) { if (state.answers[q.id] === q.correctIndex) s++; });
+  state.score = s;
+  state.submitted = true;
+  render();
+
+  const teacher = state.teachers.find(function(t) { return t.id === state.selectedTeacherId; });
+  const result = {
+    id: uid("res"),
+    teacherId: state.selectedTeacherId,
+    teacherName: teacher ? teacher.name : "Unknown",
+    studentName: state.studentName.trim() || "Unnamed",
+    score: s,
+    total: questions.length,
+    timestamp: new Date().toISOString()
+  };
+
+  try {
+    const r = await window.storage.get(RESULTS_KEY, true).catch(function() { return null; });
+    const existing = r && r.value ? JSON.parse(r.value) : [];
+    const updated = existing.concat([result]);
+    const saved = await window.storage.set(RESULTS_KEY, JSON.stringify(updated), true);
+    if (!saved) { state.saveError = true; render(); }
+  } catch (e) {
+    state.saveError = true;
+    render();
+  }
+}
+
+function resetQuiz() {
+  state.studentName = ""; state.answers = {}; state.submitted = false;
+  state.score = 0; state.saveError = false; state.selectedTeacherId = null;
+  state.view = "student-pick";
+  render();
+}
+
+function bubbleHtml(letter, filled, correctness, onclickAttr, disabled) {
+  let cls = "bubble";
+  if (filled) cls += " filled";
+  if (correctness === "correct") cls += " correct";
+  else if (correctness === "incorrect") cls += " incorrect";
+  else if (correctness === "missed") cls += " missed";
+  if (disabled) cls += " disabled";
+  return '<button class="' + cls + '" ' + (disabled ? "disabled" : onclickAttr) + '>' + letter + '</button>';
+}
+
+function render() {
+  const app = document.getElementById("app");
+  const exitBtn = document.getElementById("exitBtn");
+  exitBtn.style.display = state.view === "landing" ? "none" : "inline-block";
+
+  if (!state.loaded) {
+    app.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;padding:80px 0;"><div class="mono" style="color:#6B6B63;">Loading…</div></div>';
+    return;
+  }
+
+  let html = "";
+
+  if (state.view === "landing") {
+    html = '<div class="container" style="max-width:560px;margin-top:70px;">' +
+      '<h1 class="title">Who\'s filling this in?</h1>' +
+      '<p class="desc">Students pick their class\'s quiz below. Teachers and admin sign in to manage things.</p>' +
+      '<div class="row">' +
+        '<button class="card-btn" onclick="goto(\'student-pick\')"><span style="font-size:22px;">🧑‍🎓</span><div><div style="font-weight:700;font-size:16px;">I\'m a student</div><div style="font-size:13px;color:#8A8A80;">Take a quiz</div></div></button>' +
+        '<button class="card-btn" onclick="goto(\'teacher-login\')"><span style="font-size:22px;">🎓</span><div><div style="font-weight:700;font-size:16px;">I\'m a teacher</div><div style="font-size:13px;color:#8A8A80;">Sign in to manage your questions</div></div></button>' +
+        '<button class="card-btn" onclick="goto(\'admin-login\')"><span style="font-size:22px;">🛡️</span><div><div style="font-weight:700;font-size:16px;">I\'m the admin</div><div style="font-size:13px;color:#8A8A80;">Create teacher accounts</div></div></button>' +
+      '</div>' +
+      '<div class="mono" style="margin-top:14px;font-size:12px;color:#8A8A80;line-height:1.6;">Default admin passcode: ' + DEFAULT_ADMIN_PASSCODE + ' — sign in as admin and change it right away.</div>' +
+      '</div>';
+  }
+
+  else if (state.view === "teacher-login") {
+    html = '<div class="container" style="max-width:420px;margin-top:80px;">' +
+      '<h2 class="subtitle" style="margin-bottom:20px;">Teacher sign in</h2>' +
+      '<div class="row" style="gap:12px;">' +
+        '<div><label class="field-label">NAME</label><input id="loginNameInput" class="text-input" placeholder="Your name" /></div>' +
+        '<div><label class="field-label">PASSCODE</label><input id="loginPassInput" type="password" class="text-input" placeholder="Passcode from your admin" /></div>' +
+        (state.loginError ? '<div class="error-text">' + escapeHtml(state.loginError) + '</div>' : '') +
+        '<button class="btn-primary" onclick="attemptTeacherLogin()">🔒 Sign in</button>' +
+        '<p style="font-size:12.5px;color:#8A8A80;">Don\'t have an account? Ask your admin to create one for you.</p>' +
+      '</div></div>';
+  }
+
+  else if (state.view === "admin-login") {
+    html = '<div class="container" style="max-width:420px;margin-top:80px;">' +
+      '<h2 class="subtitle" style="margin-bottom:20px;">Admin sign in</h2>' +
+      '<div class="row" style="gap:12px;">' +
+        '<div><label class="field-label">PASSCODE</label><input id="adminPassInput" type="password" class="text-input" placeholder="Admin passcode" /></div>' +
+        (state.loginError ? '<div class="error-text">' + escapeHtml(state.loginError) + '</div>' : '') +
+        '<button class="btn-primary" onclick="attemptAdminLogin()">🔒 Sign in</button>' +
+      '</div></div>';
+  }
+
+  else if (state.view === "student-pick") {
+    html = '<div class="container" style="max-width:560px;margin-top:60px;">' +
+      '<h2 class="subtitle">Choose a quiz</h2>' +
+      '<p style="color:#8A8A80;font-size:14px;margin-bottom:20px;">Pick your teacher\'s quiz to begin.</p>';
+    if (state.teachers.length === 0) {
+      html += '<div class="card" style="color:#8A8A80;">No quizzes have been set up yet — check back after your teacher adds questions.</div>';
+    }
+    html += '<div class="row" style="gap:10px;">';
+    state.teachers.forEach(function(t) {
+      const count = (t.questions || []).length;
+      const disabled = count === 0;
+      html += '<button class="card-btn" style="justify-content:space-between;' + (disabled ? 'opacity:0.5;cursor:not-allowed;' : '') + '" ' +
+        (disabled ? 'disabled' : 'onclick="selectTeacherQuiz(\'' + t.id + '\')"') + '>' +
+        '<div><div style="font-weight:700;">' + escapeHtml(t.name) + '</div><div style="font-size:12.5px;color:#8A8A80;">' + count + ' question' + (count === 1 ? '' : 's') + '</div></div>' +
+        '<span>→</span></button>';
+    });
+    html += '</div></div>';
+  }
+
+  else if (state.view === "student-quiz") {
+    const questions = activeQuizQuestions();
+    html = '<div class="container" style="max-width:640px;padding-top:36px;">';
+    if (!state.submitted) {
+      html += '<div style="margin-bottom:28px;"><label class="field-label">NAME</label>' +
+        '<input id="studentNameInput" class="text-input" placeholder="Type your name" value="' + escapeHtml(state.studentName) + '" oninput="state.studentName=this.value" /></div>';
+      questions.forEach(function(q, qi) {
+        html += '<div class="card" style="margin-bottom:14px;">' +
+          '<div style="display:flex;gap:10px;margin-bottom:14px;"><span class="mono" style="font-weight:700;color:#2B4C7E;font-size:15px;">Q' + (qi+1) + '</span><span style="font-size:16px;font-weight:600;line-height:1.4;">' + escapeHtml(q.text) + '</span></div>' +
+          '<div style="display:flex;flex-direction:column;gap:10px;padding-left:32px;">';
+        q.options.forEach(function(opt, oi) {
+          const filled = state.answers[q.id] === oi;
+          html += '<div class="opt-row" onclick="selectAnswer(\'' + q.id + '\',' + oi + ')">' +
+            bubbleHtml(LETTERS[oi], filled, null, 'onclick="event.stopPropagation();selectAnswer(\'' + q.id + '\',' + oi + ')"', false) +
+            '<span style="font-size:15px;">' + escapeHtml(opt) + '</span></div>';
+        });
+        html += '</div></div>';
+      });
+      const answered = Object.keys(state.answers).length > 0;
+      html += '<button class="btn-primary" style="width:100%;padding:16px;font-size:16px;" ' + (answered ? '' : 'disabled') + ' onclick="handleSubmit()">Turn in answers</button>';
+    } else {
+      html += '<div style="text-align:center;padding:40px 0;">' +
+        '<div class="stamp">' + state.score + '/' + questions.length + '</div>' +
+        '<p style="color:#6B6B63;margin-bottom:28px;">Nice work, ' + escapeHtml(state.studentName.trim() || "there") + '. Here\'s how each answer landed:</p>';
+      if (state.saveError) {
+        html += '<p class="error-text" style="margin-bottom:20px;">Your score is shown above, but it couldn\'t be saved for your teacher — try submitting again.</p>';
+      }
+      html += '<div style="text-align:left;">';
+      questions.forEach(function(q, qi) {
+        html += '<div class="card" style="margin-bottom:12px;">' +
+          '<div style="display:flex;gap:10px;margin-bottom:12px;"><span class="mono" style="font-weight:700;color:#2B4C7E;">Q' + (qi+1) + '</span><span style="font-weight:600;">' + escapeHtml(q.text) + '</span></div>' +
+          '<div style="display:flex;flex-direction:column;gap:8px;padding-left:32px;">';
+        q.options.forEach(function(opt, oi) {
+          let correctness = null;
+          if (oi === q.correctIndex) correctness = state.answers[q.id] === oi ? "correct" : "missed";
+          else if (state.answers[q.id] === oi) correctness = "incorrect";
+          html += '<div style="display:flex;align-items:center;gap:12px;">' +
+            bubbleHtml(LETTERS[oi], state.answers[q.id] === oi, correctness, "", true) +
+            '<span style="font-size:14.5px;">' + escapeHtml(opt) + '</span></div>';
+        });
+        html += '</div></div>';
+      });
+      html += '</div><button class="btn-ghost" style="margin-top:8px;" onclick="resetQuiz()">↻ Take another quiz</button></div>';
+    }
+    html += '</div>';
+  }
+
+  else if (state.view === "teacher-dash" && state.editingQuestions) {
+    const myResults = state.results.filter(function(r) { return r.teacherId === state.currentTeacherId; });
+    html = '<div class="container-wide">' +
+      '<h2 class="subtitle">Your results</h2>' +
+      '<p style="color:#8A8A80;font-size:13px;margin-bottom:16px;">' + myResults.length + ' submission(s) on your quiz</p>' +
+      '<div class="card" style="padding:0;overflow:hidden;margin-bottom:40px;">';
+    if (myResults.length === 0) {
+      html += '<div style="padding:20px;color:#8A8A80;font-size:14px;">No submissions yet.</div>';
+    } else {
+      html += '<table><thead><tr><th>STUDENT</th><th>SCORE</th><th>SUBMITTED</th></tr></thead><tbody>';
+      myResults.slice().sort(function(a,b){ return new Date(b.timestamp)-new Date(a.timestamp); }).forEach(function(r) {
+        html += '<tr><td style="font-weight:600;">' + escapeHtml(r.studentName) + '</td><td class="mono">' + r.score + '/' + r.total + '</td><td style="color:#8A8A80;font-size:13px;">' + new Date(r.timestamp).toLocaleString() + '</td></tr>';
+      });
+      html += '</tbody></table>';
+    }
+    html += '</div>' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">' +
+      '<h2 class="subtitle" style="margin:0;">Your questions</h2>' +
+      '<button class="btn-primary" style="padding:9px 16px;font-size:13px;" onclick="saveOwnQuestions()" ' + (state.savingQuestions ? 'disabled' : '') + '>✓ ' + (state.savingQuestions ? 'Saving…' : 'Save quiz') + '</button>' +
+      '</div>' +
+      '<p style="color:#8A8A80;font-size:13px;margin-bottom:16px;">Click a letter to mark the correct answer. Only you can edit these.</p>';
+
+    state.editingQuestions.forEach(function(q, qi) {
+      html += '<div class="card" style="margin-bottom:14px;">' +
+        '<div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:12px;">' +
+        '<span class="mono" style="font-weight:700;color:#2B4C7E;padding-top:8px;">Q' + (qi+1) + '</span>' +
+        '<input class="text-input" style="flex:1;padding:8px 12px;font-size:15px;font-weight:600;" value="' + escapeHtml(q.text) + '" oninput="updateQuestionText(' + qi + ', this.value)" placeholder="Question text" />' +
+        '<button style="background:transparent;border:none;cursor:pointer;padding:8px;color:#B3432B;font-size:16px;" onclick="removeQuestionEdit(' + qi + ')">🗑</button>' +
+        '</div><div style="display:flex;flex-direction:column;gap:8px;padding-left:32px;">';
+      q.options.forEach(function(opt, oi) {
+        html += '<div style="display:flex;align-items:center;gap:10px;">' +
+          bubbleHtml(LETTERS[oi], q.correctIndex === oi, null, 'onclick="setCorrectIndex(' + qi + ',' + oi + ')"', false) +
+          '<input class="text-input" style="flex:1;padding:7px 10px;font-size:14px;" value="' + escapeHtml(opt) + '" oninput="updateOptionText(' + qi + ',' + oi + ', this.value)" placeholder="Option ' + LETTERS[oi] + '" />' +
+          '</div>';
+      });
+      html += '</div></div>';
+    });
+    html += '<button style="display:flex;align-items:center;gap:8px;padding:12px 18px;background:transparent;border:2px dashed #B7B2A2;border-radius:10px;color:#6B6B63;font-family:\'IBM Plex Mono\',monospace;font-weight:600;font-size:13.5px;cursor:pointer;width:100%;justify-content:center;" onclick="addQuestion()">+ Add question</button>';
+    html += '</div>';
+  }
+
+  else if (state.view === "admin-dash") {
+    html = '<div class="container-wide">' +
+      '<h2 class="subtitle" style="margin-bottom:16px;">Teacher accounts</h2>' +
+      '<div class="card" style="margin-bottom:24px;">' +
+        '<div style="display:flex;gap:10px;flex-wrap:wrap;">' +
+        '<input id="newTeacherNameInput" class="text-input" style="flex:1 1 180px;width:auto;" placeholder="Teacher name" />' +
+        '<input id="newTeacherPassInput" class="text-input" style="flex:1 1 140px;width:auto;" placeholder="Passcode" />' +
+        '<button class="btn-primary" onclick="addTeacher()">+ Add</button>' +
+        '</div></div>' +
+      '<div class="row" style="gap:10px;margin-bottom:32px;">';
+    if (state.teachers.length === 0) {
+      html += '<div style="color:#8A8A80;font-size:14px;">No teachers added yet.</div>';
+    }
+    state.teachers.forEach(function(t) {
+      html += '<div class="card" style="display:flex;align-items:center;justify-content:space-between;">' +
+        '<div><div style="font-weight:700;">' + escapeHtml(t.name) + '</div><div class="mono" style="font-size:12.5px;color:#8A8A80;">passcode: ' + escapeHtml(t.passcode) + ' · ' + (t.questions||[]).length + ' question(s)</div></div>' +
+        '<button style="background:transparent;border:none;cursor:pointer;color:#B3432B;font-size:16px;" onclick="removeTeacher(\'' + t.id + '\')">🗑</button></div>';
+    });
+    html += '</div>' +
+      '<h2 class="subtitle" style="margin-bottom:16px;">All results</h2>' +
+      '<div class="card" style="padding:0;overflow:hidden;margin-bottom:32px;">';
+    if (state.results.length === 0) {
+      html += '<div style="padding:20px;color:#8A8A80;font-size:14px;">No submissions yet.</div>';
+    } else {
+      html += '<table><thead><tr><th>STUDENT</th><th>TEACHER</th><th>SCORE</th><th>SUBMITTED</th></tr></thead><tbody>';
+      state.results.slice().sort(function(a,b){ return new Date(b.timestamp)-new Date(a.timestamp); }).forEach(function(r) {
+        html += '<tr><td style="font-weight:600;">' + escapeHtml(r.studentName) + '</td><td style="color:#8A8A80;font-size:13px;">' + escapeHtml(r.teacherName) + '</td><td class="mono">' + r.score + '/' + r.total + '</td><td style="color:#8A8A80;font-size:13px;">' + new Date(r.timestamp).toLocaleString() + '</td></tr>';
+      });
+      html += '</tbody></table>';
+    }
+    html += '</div>' +
+      '<h2 class="subtitle" style="margin-bottom:16px;">Change admin passcode</h2>' +
+      '<div class="card" style="display:flex;gap:10px;flex-wrap:wrap;">' +
+      '<input id="newAdminPassInput" class="text-input" style="flex:1 1 200px;width:auto;" placeholder="New admin passcode" />' +
+      '<button class="btn-ghost" onclick="updateAdminPasscode()">Update</button>' +
+      '</div></div>';
+  }
+
+  app.innerHTML = html;
+}
+
+function selectTeacherQuiz(id) {
+  state.selectedTeacherId = id;
+  state.view = "student-quiz";
+  render();
+}
+
+document.getElementById("exitBtn").addEventListener("click", goLanding);
+init();
+</script>
+</body>
+</html>
